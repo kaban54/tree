@@ -1,0 +1,8 @@
+
+{"animal"
+	{"bezumno_mozhno_bit'_pervim"
+		{"wolf"}
+		{"1.5"}
+	}
+	{"neizvestno kto"}
+}

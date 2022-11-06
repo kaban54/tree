@@ -9,15 +9,7 @@ int main()
     if (LOG == nullptr) return 0;
     fprintf (LOG, "<pre>\n");
 
-    Tree_t tree = {};
-
-    TreeCtor (&tree);
-
-    LoadTree (&tree, "save.txt");
-
-    TreeDump (&tree);
-
-    TreeDtor (&tree);
+    RunAkinator ();
 
     fclose (LOG);
     return 0;

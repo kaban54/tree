@@ -2,8 +2,26 @@
 
 const size_t BUFSIZE = 512;
 
+const char *const TREE_FILE_NAME = "akinator_tree.txt";
 
-int RunAkinator (Tree_t *tree);
+const char *const YES = "yes";
+const char *const  NO =  "no";
+
+int RunAkinator ();
+
+int RunGuess (Tree_t *tree);
+
+int Question (Tree_t *tree, TreeElem_t *elem);
+
+int Add_new_question (Tree_t *tree, TreeElem_t *elem);
+
+int Get_new_question (char *buf);
+
+int RunDefinition (Tree_t *tree);
+
+int RunDifference (Tree_t *tree);
+
+int ShowTree (Tree_t *tree);
 
 int LoadTree (Tree_t *tree, const char *filename);
 

@@ -1,11 +1,148 @@
 #include "akinator.h"
 
-int RunAkinator (Tree_t *tree)
+int RunAkinator ()
 {
+    Tree_t tree = {};
+    TreeCtor (&tree);
 
+    int err = LoadTree (&tree, TREE_FILE_NAME);
+
+    while (1)
+    {
+        if (err) return err;
+
+        printf ("\n=== AKINATOR ===\n");
+        printf ("modes:\n"
+                "1) guess\n"
+                "2) definition\n"
+                "3) difference\n"
+                "4) show tree\n"
+                "5) quit\n");
+        int mode = 0;
+        scanf ("%d", &mode);
+        printf ("\n");
+
+        switch (mode)
+        {
+            case 1:
+                err = RunGuess (&tree);
+                break;
+            case 2:
+                err = RunDefinition (&tree);
+                break;
+            case 3:
+                err = RunDifference (&tree);
+                break;
+            case 4:
+                err = ShowTree (&tree);
+                break;
+            default:
+                mode = 5;
+                break;
+        }
+
+        if (mode == 5) break;
+    }
+
+    err = SaveTree (&tree, TREE_FILE_NAME);
+    return err;
+}
+
+int RunGuess (Tree_t *tree)
+{
+    while (1)
+    {
+        printf ("\n==== GUESS ====\n");
+        printf ("1) start\n"
+                "2) quit\n");
+        int mode = 0;
+        scanf ("%d", &mode);
+        printf ("\n");
+
+        if (mode == 1)
+        {
+            Question (tree, &(tree -> data));
+        }
+        else return 0;
+    }
+}
+
+int Question (Tree_t *tree, TreeElem_t *elem)
+{
+    printf ("\n%s?\n", elem -> value);
+    char ans [BUFSIZE] = "";
+
+    scanf ("%s", ans);
+    while (stricmp (ans, YES) && stricmp (ans, NO))
+    {
+        printf ("\nSorry, I don't understand you.\n");
+        scanf ("%s", ans);
+    }
+    printf ("\n");
+
+    int err = 0;
+
+    if (elem -> left)
+    {
+        if (stricmp (ans, YES) == 0) err |= Question (tree, elem ->  left);
+        else                         err |= Question (tree, elem -> right);
+    }
+    else
+    {
+        if (stricmp (ans, YES) == 0) printf ("it was obvious!\n");
+        else err |= Add_new_question (tree, elem);
+    }
+    return err;
+}
+
+int Add_new_question (Tree_t *tree, TreeElem_t *elem)
+{
+    char ans [BUFSIZE] = "";
+    int err = 0;
+
+    printf ("Then who is it?\n");
+    scanf ("%s", ans);
+
+    char *newval = (char *) calloc (strlen (ans) + 1, 1);
+    if (newval == nullptr) return TREE_ALLOC_ERROR;
+
+    strcpy (newval, ans);
+
+    err |= TreeAddLeft  (tree, elem, newval);
+    err |= TreeAddRight (tree, elem, elem -> value);
+
+    if (err) return err;
+
+    printf ("\nHow %s differs form %s?\n", elem -> left -> value, elem -> right -> value);
+    scanf ("%s", ans);
+        
+    char *newquestion = (char *) calloc (strlen (ans) + 1, 1);
+    if (newquestion == nullptr) return TREE_ALLOC_ERROR;
+
+    strcpy (newquestion, ans);
+    elem -> value = newquestion;
+
+    printf ("\nOh, now I see!\n");
+
+    return err;
+}
+
+int RunDefinition (Tree_t *tree)
+{
+    
+}
+
+int RunDifference (Tree_t *tree)
+{
     return 0;
 }
 
+int ShowTree (Tree_t *tree)
+{
+    Tree_generate_img (tree, 0);
+    system ("start ./images/dumpimg0.png");
+    return 0;
+}
 
 int LoadTree (Tree_t *tree, const char *filename)
 {
@@ -20,6 +157,7 @@ int LoadTree (Tree_t *tree, const char *filename)
     tree -> size = 0;
     Read_tree (file, &(tree -> data), &(tree -> size));
 
+    fclose (file);
     TreeVerify (tree);
     return TREE_OK;
 }
