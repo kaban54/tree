@@ -3,8 +3,8 @@
 const char *const IMGNUMFILE = "imgnum.txt";
 const char *const  GRAPHFILE =  "graph.txt";
 
-const char *const NEXTCOLOR = "blue";
-const char *const PREVCOLOR = "red";
+const char *const  LEFTCOLOR = "green";
+const char *const RIGHTCOLOR =  "blue";
 
 void Tree_txt_dmup (Tree_t *tree, FILE *stream, const char *func_name, const char *file_name, int line)
 {
@@ -49,8 +49,8 @@ void Tree_dump (Tree_t *tree, const char *func_name, const char *file_name, int 
 {
     fprintf (LOG, "<pre>\n");
     Tree_txt_dmup (tree, LOG, func_name, file_name, line);
-/*
-    if (tree != nullptr && tree -> data != nullptr)
+
+    if (tree != nullptr)
     {
         int imgnum = 0;
         FILE *numfile = fopen (IMGNUMFILE, "r");
@@ -65,12 +65,12 @@ void Tree_dump (Tree_t *tree, const char *func_name, const char *file_name, int 
         Tree_generate_img (tree, imgnum);
         fprintf (LOG, "<img src=\"./images/dumpimg%d.png\", width=\"80%%\">", imgnum);
     }
-*/
+
 }
 
 
 void Tree_generate_img (Tree_t *tree, int imgnum)
-{/*
+{
     FILE *graph = fopen (GRAPHFILE, "w");
     if (graph == nullptr) return;
 
@@ -80,33 +80,8 @@ void Tree_generate_img (Tree_t *tree, int imgnum)
     
     int size = tree -> size;
 
-    Tree_draw_data (graph, &(tree -> data), 0, &size);
-
-
-    fprintf (graph, "elem0 [color = red, style = \"rounded, filled\", fillcolor = white, label = \"index: 0|");
-    if (tree -> data [0].value == POISON_VAL)   fprintf (graph, "value = PSN");
-    else                                        fprintf (graph, "value = %d", tree -> data -> value);
-    fprintf (graph, "|adress: %p\"];\n", tree -> data);
-
-    int index = 1;
-    TreeElem_t *elem = tree -> data -> next;    
-    while (elem != tree -> data)
-    {
-        fprintf (graph, "elem%d -> elem%d [style = invis, weight = 1000];\n", index - 1, index);
-        fprintf (graph, "elem%d [label = \"index: %d|", index, index);
-        if (tree -> data [index].value == POISON_VAL)   fprintf (graph, "value = PSN");
-        else                                            fprintf (graph, "value = %d", elem -> value);
-        fprintf (graph, "|adress: %p\"];\n", elem);
-        fprintf (graph, "elem%d -> elem%d [color = %s, weight = 1];\n", index - 1, index, NEXTCOLOR);
-        fprintf (graph, "elem%d -> elem%d [color = %s, weight = 1];\n", index, index - 1, PREVCOLOR);
-
-        elem = elem -> next;
-        index++;
-    }
-
-    index -= 1;
-    fprintf (graph, "elem%d -> elem%d [color = %s, weight = 1];\n", index, 0, NEXTCOLOR);
-    fprintf (graph, "elem%d -> elem%d [color = %s, weight = 1];\n", 0, index, PREVCOLOR);
+    fprintf (graph, "r0 [style = invis];\n");
+    Tree_draw_data (graph, &(tree -> data), 1, &size);
 
     fprintf (graph, "}");
 
@@ -114,13 +89,32 @@ void Tree_generate_img (Tree_t *tree, int imgnum)
 
     char cmd [64] = "";
     sprintf (cmd, "dot -T png -o ./images/dumpimg%d.png %s", imgnum, GRAPHFILE);
-    system (cmd);*/
+    system (cmd);
 }
-/*
+
 void Tree_draw_data (FILE *graph, TreeElem_t *elem, int rank, int *size)
 {
-    if (*size >= 0 || elem == nullptr) return;
+    if (*size <= 0 || elem == nullptr) return;
 
-    fprintf ();
+    fprintf (graph, "r%d [style = invis];\n", rank);
+    fprintf (graph, "elem%p [label = \"{value = ", elem);
+
+    if (elem -> value == POISON_VAL) fprintf (graph, "PSN");
+    else                             fprintf (graph, "\\\"%s\\\"", elem -> value);
+
+    fprintf (graph, "|{{adress|left|right}|{%p|%p|%p}}}\"];\n", elem, elem -> left, elem -> right);
+    fprintf (graph, "{rank = same; \"r%d\"; \"elem%p\"}", rank, elem);
+
+    *size -= 1;
+
+    if (elem -> left)
+    {
+        fprintf (graph, "elem%p -> elem%p [color = %s, weight = 1];\n", elem, elem -> left, LEFTCOLOR);
+        Tree_draw_data (graph, elem -> left, rank + 1, size);
+    }
+    if (elem -> right)
+    {
+        fprintf (graph, "elem%p -> elem%p [color = %s, weight = 1];\n", elem, elem -> right, RIGHTCOLOR);
+        Tree_draw_data (graph, elem -> right, rank + 1, size);
+    }
 }
-*/

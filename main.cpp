@@ -17,6 +17,8 @@ int main()
     TreeAddLeft  (&tree, &tree.data, "1");
     TreeAddRight (&tree, &tree.data, "2");
     TreeAddRight (&tree, tree.data.left, "3");
+    TreeAddLeft (&tree, tree.data.left, "4");
+    TreeAddLeft (&tree, tree.data.right, "5");
 
     TreeDump (&tree);
 

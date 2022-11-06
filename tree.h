@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef char* val_t;
+typedef const char* val_t;
 
 const char *const LOGFILENAME = "treelog.html";
 extern FILE *LOG;
@@ -109,5 +109,7 @@ void Tree_print_data (FILE *stream, TreeElem_t *elem);
 void Tree_dump (Tree_t *tree, const char *func_name, const char *file_name, int line);
 
 void Tree_generate_img (Tree_t *tree, int imgnum);
+
+void Tree_draw_data (FILE *graph, TreeElem_t *elem, int rank, int *size);
 
 #endif
