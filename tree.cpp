@@ -1,9 +1,5 @@
 #include "tree.h"
 
-#define TreeErr(tree, error)  {tree -> err |= error;   \
-                                TreePrintError (tree); \
-                                return tree -> err; }
-
 int Tree_ctor (Tree_t *tree, const char *name, const char *func_name, const char *file_name, int line)
 {
     if (tree == nullptr) return TREE_NULLPTR_ARG;
@@ -38,12 +34,12 @@ int Tree_set_info (Tree_t *tree, const char *name, const char *func_name, const 
 }
 
 
-int TreeDtor (Tree_t *tree)
+int TreeDtor (Tree_t *tree, int freevalue)
 {
     TreeVerify (tree);
 
-    if (tree -> data. left) Tree_free_data (tree -> data. left, &(tree -> size));
-    if (tree -> data.right) Tree_free_data (tree -> data.right, &(tree -> size));
+    if (tree -> data. left) Tree_free_data (tree -> data. left, &(tree -> size), freevalue);
+    if (tree -> data.right) Tree_free_data (tree -> data.right, &(tree -> size), freevalue);
 
     tree -> data. left = nullptr;
     tree -> data.right = nullptr;
@@ -56,20 +52,21 @@ int TreeDtor (Tree_t *tree)
     return TREE_OK;
 }
 
-int TreeFreeData (Tree_t *tree, TreeElem_t *elem)
+int TreeFreeData (Tree_t *tree, TreeElem_t *elem, int freevalue)
 {
     TreeVerify (tree);
 
     if (elem == nullptr) return TREE_OK;
 
-    return Tree_free_data (elem, &(tree -> size));
+    return Tree_free_data (elem, &(tree -> size), freevalue);
 }
 
-int Tree_free_data (TreeElem_t *elem, int *size)
+int Tree_free_data (TreeElem_t *elem, int *size, int freevalue)
 {
-    if (elem ->  left) Tree_free_data (elem ->  left, size);
-    if (elem -> right) Tree_free_data (elem -> right, size);
+    if (elem ->  left) Tree_free_data (elem ->  left, size, freevalue);
+    if (elem -> right) Tree_free_data (elem -> right, size, freevalue);
 
+    if (freevalue && elem -> value != POISON_VAL) free ( elem -> value);
     free (elem);
     *size -= 1;
 

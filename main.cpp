@@ -1,4 +1,5 @@
 #include "tree.h"
+#include "akinator.h"
 
 FILE *LOG = NULL;
 
@@ -12,13 +13,7 @@ int main()
 
     TreeCtor (&tree);
 
-    TreeDump (&tree);
-
-    TreeAddLeft  (&tree, &tree.data, "1");
-    TreeAddRight (&tree, &tree.data, "2");
-    TreeAddRight (&tree, tree.data.left, "3");
-    TreeAddLeft (&tree, tree.data.left, "4");
-    TreeAddLeft (&tree, tree.data.right, "5");
+    LoadTree (&tree, "save.txt");
 
     TreeDump (&tree);
 

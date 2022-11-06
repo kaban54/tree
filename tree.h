@@ -3,8 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
 
-typedef const char* val_t;
+typedef char* val_t;
 
 const char *const LOGFILENAME = "treelog.html";
 extern FILE *LOG;
@@ -59,6 +61,8 @@ enum TREEERRORS
     TREE_DATA_CORRUPTED     =  16,
     TREE_INCORRECT_SIZE     =  32,
     TREE_INCORRECT_POSITION =  64,
+    TREE_INCORRECT_FORMAT   = 128,
+
 };
 
 #define TreeCtor(tree) Tree_ctor (tree, #tree, __PRETTY_FUNCTION__, __FILE__, __LINE__)
@@ -76,15 +80,19 @@ enum TREEERRORS
 
 #define TreePrintError(tree) Tree_print_error (tree, __PRETTY_FUNCTION__, __FILE__, __LINE__)
 
+#define TreeErr(tree, error)  {tree -> err |= error;   \
+                                TreePrintError (tree); \
+                                return tree -> err; }
+
 int Tree_ctor (Tree_t *tree, const char *name, const char *func_name, const char *file_name, int line);
 
 int Tree_set_info (Tree_t *tree, const char *name, const char *func_name, const char *file_name, int line);
 
-int TreeDtor (Tree_t *tree);
+int TreeDtor (Tree_t *tree, int freevalue = 0);
 
-int TreeFreeData (Tree_t *tree, TreeElem_t *elem);
+int TreeFreeData (Tree_t *tree, TreeElem_t *elem, int freevalue = 0);
 
-int Tree_free_data (TreeElem_t *elem, int *size);
+int Tree_free_data (TreeElem_t *elem, int *size, int freevalue = 0);
 
 TreeElem_t *TreeAllocElem (void);
 
