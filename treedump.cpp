@@ -4,7 +4,7 @@ const char *const IMGNUMFILE = "imgnum.txt";
 const char *const  GRAPHFILE =  "graph.txt";
 
 const char *const  LEFTCOLOR = "green";
-const char *const RIGHTCOLOR =  "blue";
+const char *const RIGHTCOLOR =   "red";
 
 void Tree_txt_dmup (Tree_t *tree, FILE *stream, const char *func_name, const char *file_name, int line)
 {

@@ -16,7 +16,10 @@
 				{"malloc"}
 				{"calloc"}
 			}
-			{"printf"}
+			{"input function"
+				{"scanf"}
+				{"printf"}
+			}
 		}
 		{"chelovek"
 			{"studies at MIPT"
@@ -38,9 +41,21 @@
 						{"Moscow"}
 						{"Dolgoprudniy"}
 					}
-					{"Los Angeles"}
+					{"tam riba, chipsi, dryannaya eda, otvratnaya pogoda, Marry *** Poppins"
+						{"London"}
+						{"Los Angeles"}
+					}
 				}
-				{"neizvestno kto"}
+				{"zeleniy"
+					{"2"
+						{"shrek 2"}
+						{"shrek"}
+					}
+					{"izvesten"
+						{"izvestno kto"}
+						{"neizvestno kto"}
+					}
+				}
 			}
 		}
 	}

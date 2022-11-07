@@ -25,7 +25,7 @@ int RunDefinition (Tree_t *tree);
 
 int Get_definition (TreeElem_t *elem, Stack_t *stk, char *name);
 
-void Print_definition (TreeElem_t *elem, Stack_t *stk, char *name);
+void Print_definition (TreeElem_t *elem, Stack_t *stk, int *index);
 
 int RunDifference (Tree_t *tree);
 

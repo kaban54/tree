@@ -45,6 +45,7 @@ int RunAkinator ()
     }
 
     err = SaveTree (&tree, TREE_FILE_NAME);
+    TreeDump (&tree);
     return err;
 }
 
@@ -145,7 +146,12 @@ int RunDefinition (Tree_t *tree)
     Stack_t stk = {};
     StackCtor (&stk, 16);
 
-    if (Get_definition (&(tree -> data), &stk, ans)) Print_definition (&(tree -> data), &stk, ans);
+    if (Get_definition (&(tree -> data), &stk, ans))
+    {
+        printf ("\n%s is\n", ans);
+        int index = 0;
+        Print_definition (&(tree -> data), &stk, &index);
+    }
     else printf ("\nI don't know what's that :(\n");
 
     StackDtor (&stk);
@@ -170,22 +176,23 @@ int Get_definition (TreeElem_t *elem, Stack_t *stk, char *name)
     return 0;
 }
 
-void Print_definition (TreeElem_t *elem, Stack_t *stk, char *name)
+void Print_definition (TreeElem_t *elem, Stack_t *stk, int *index)
 {
-    printf ("\n%s is\n", name);
+    //printf ("\n%s is\n", name);
 
-    for (int index = 0; index < stk -> size; index ++)
+    for (; *index < stk -> size; (*index)++)
     {
-        if (!(stk -> data [index])) printf ("ne ");
+        if (!(stk -> data [*index])) printf ("ne ");
         printf ("%s", elem -> value);
-        
-        if (index != stk -> size - 1) printf (",");
+
+        if (*index != stk -> size - 1) printf (",");
         printf ("\n");
 
-        if (stk -> data [index]) elem = elem ->  left;
-        else                     elem = elem -> right;
+        if (stk -> data [*index]) elem = elem ->  left;
+        else                      elem = elem -> right;
     }
 }
+
 
 int RunDifference (Tree_t *tree)
 {
@@ -244,35 +251,15 @@ void Print_difference (TreeElem_t *elem, Stack_t *stk1, Stack_t *stk2, char *nam
 
     if (index == stk1 -> size) return;
 
-    TreeElem_t *elem1 = elem;
-
     if (index != 0) printf ("but ");
 
-    printf ("%s is\n", name1);
-    for (int index1 = index; index1 < stk1 -> size; index1++)
-    {
-        if (!(stk1 -> data [index1])) printf ("ne ");
-        printf ("%s", elem1 -> value);
-        
-        if (index1 != stk1 -> size - 1) printf (",");
-        printf ("\n");
+    int index1 = index;
 
-        if (stk1 -> data [index1]) elem1 = elem1 ->  left;
-        else                       elem1 = elem1 -> right;
-    }
+    printf ("%s is\n", name1);
+    Print_definition (elem, stk1, &index1);
 
     printf ("and %s is\n", name2);
-    for (int index2 = index; index2 < stk2 -> size; index2++)
-    {
-        if (!(stk2 -> data [index2])) printf ("ne ");
-        printf ("%s", elem -> value);
-        
-        if (index2 != stk2 -> size - 1) printf (",");
-        printf ("\n");
-
-        if (stk2 -> data [index2]) elem = elem ->  left;
-        else                       elem = elem -> right;
-    }
+    Print_definition (elem, stk2, &index);
 }
 
 int ShowTree (Tree_t *tree)
