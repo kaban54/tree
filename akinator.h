@@ -19,6 +19,8 @@ int Add_new_question (Tree_t *tree, TreeElem_t *elem);
 
 int Get_new_question (char *buf);
 
+char *Get_ans (char *ans);
+
 int RunDefinition (Tree_t *tree);
 
 int Get_definition (TreeElem_t *elem, Stack_t *stk, char *name);

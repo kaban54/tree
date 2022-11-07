@@ -101,9 +101,8 @@ int Add_new_question (Tree_t *tree, TreeElem_t *elem)
     int err = 0;
 
     printf ("Then who is it?\n");
-    //fgets (ans, BUFSIZE, stdin);
-    scanf ("%s", ans);
-
+    Get_ans (ans);
+    
     char *newval = (char *) calloc (strlen (ans) + 1, 1);
     if (newval == nullptr) return TREE_ALLOC_ERROR;
 
@@ -115,8 +114,7 @@ int Add_new_question (Tree_t *tree, TreeElem_t *elem)
     if (err) return err;
 
     printf ("\nHow %s differs form %s?\n", elem -> left -> value, elem -> right -> value);
-    //fgets (ans, BUFSIZE, stdin);
-    scanf ("%s", ans);
+    Get_ans (ans);
         
     char *newquestion = (char *) calloc (strlen (ans) + 1, 1);
     if (newquestion == nullptr) return TREE_ALLOC_ERROR;
@@ -129,14 +127,20 @@ int Add_new_question (Tree_t *tree, TreeElem_t *elem)
     return err;
 }
 
+char *Get_ans (char *ans)
+{
+    fflush (stdin);
+    fgets (ans, BUFSIZE, stdin);
+    *strchr (ans, '\n') = '\0';
+    return ans;
+}
+
 int RunDefinition (Tree_t *tree)
 {
     printf ("\nWhose definition would you like to know?\n");
 
     char ans [BUFSIZE] = "";
-
-    //fgets (ans, BUFSIZE, stdin);
-    scanf ("%s", ans);
+    Get_ans (ans);
 
     Stack_t stk = {};
     StackCtor (&stk, 16);
@@ -188,8 +192,7 @@ int RunDifference (Tree_t *tree)
     printf ("Enter two things\n");
 
     char name1 [BUFSIZE] = "";
-    //fgets (name1, BUFSIZE, stdin);
-    scanf ("%s", name1);
+    Get_ans (name1);
 
     Stack_t stk1 = {};
     StackCtor (&stk1, 16);
@@ -201,8 +204,7 @@ int RunDifference (Tree_t *tree)
     }
 
     char name2 [BUFSIZE] = "";
-    //fgets (name2, BUFSIZE, stdin);
-    scanf ("%s", name2);
+    Get_ans (name2);
 
     Stack_t stk2 = {};
     StackCtor (&stk2, 16);
