@@ -4,8 +4,8 @@ CC = g++
 all: tree.exe
 
 
-tree.exe: main.o tree.o treedump.o akinator.o
-	$(CC) -o tree.exe main.o tree.o treedump.o akinator.o $(CFLAGS)
+tree.exe: main.o tree.o treedump.o akinator.o stack.o
+	$(CC) -o tree.exe main.o tree.o treedump.o akinator.o stack.o $(CFLAGS)
 
 main.o: main.cpp
 	$(CC) -o main.o main.cpp -c $(CFLAGS)
@@ -18,6 +18,9 @@ treedump.o: treedump.cpp
 
 akinator.o: akinator.cpp 
 	$(CC) -o akinator.o akinator.cpp -c $(CFLAGS)
+
+stack.o: stack.cpp
+	$(CC) -o stack.o stack.cpp -c $(CFLAGS)
 
 clean:
 	rm *.o

@@ -1,4 +1,6 @@
 #include "tree.h"
+#include "stack.h"
+#include <unistd.h>
 
 const size_t BUFSIZE = 512;
 
@@ -19,7 +21,13 @@ int Get_new_question (char *buf);
 
 int RunDefinition (Tree_t *tree);
 
+int Get_definition (TreeElem_t *elem, Stack_t *stk, char *name);
+
+void Print_definition (TreeElem_t *elem, Stack_t *stk, char *name);
+
 int RunDifference (Tree_t *tree);
+
+void Print_difference (TreeElem_t *elem, Stack_t *stk1, Stack_t *stk2, char *name1, char *name2);
 
 int ShowTree (Tree_t *tree);
 

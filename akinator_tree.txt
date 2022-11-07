@@ -1,8 +1,47 @@
 
 {"animal"
-	{"bezumno_mozhno_bit'_pervim"
-		{"wolf"}
-		{"1.5"}
+	{"vistupet v cirqe"
+		{"polosatiy"
+			{"tigr"}
+			{"lev"}
+		}
+		{"big"
+			{"wolf"}
+			{"1.5"}
+		}
 	}
-	{"neizvestno kto"}
+	{"c function"
+		{"allocates memory"
+			{"cringe"
+				{"malloc"}
+				{"calloc"}
+			}
+			{"printf"}
+		}
+		{"chelovek"
+			{"studies at MIPT"
+				{"loh"
+					{"Max"}
+					{"Senya"}
+				}
+				{"can sing"
+					{"americanec"
+						{"Michael Jackson"}
+						{"Alla Pugacheva"}
+					}
+					{"ded"}
+				}
+			}
+			{"gorod"
+				{"in Russia"
+					{"capital"
+						{"Moscow"}
+						{"Dolgoprudniy"}
+					}
+					{"Los Angeles"}
+				}
+				{"neizvestno kto"}
+			}
+		}
+	}
 }
