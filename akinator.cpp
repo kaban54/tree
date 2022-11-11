@@ -62,38 +62,52 @@ int RunGuess (Tree_t *tree)
 
         if (mode == 1)
         {
-            Question (tree, &(tree -> data));
+            Question (tree, &(tree -> data), SURE);
         }
         else return 0;
     }
 }
 
-int Question (Tree_t *tree, TreeElem_t *elem)
+int Question (Tree_t *tree, TreeElem_t *elem, int unsure_before)
 {
-    printf ("\n%s?\n", elem -> value);
+    txSpeak ("\v\n%s?\n", elem -> value);
+    printf ("(%s / %s / %s / %s)\n", YES, UNSURE_YES, UNSURE_NO, NO);
     char ans [BUFSIZE] = "";
 
-    scanf ("%s", ans);
-    while (stricmp (ans, YES) && stricmp (ans, NO))
+    Get_ans (ans);
+    while (stricmp (ans, YES) && stricmp (ans, NO) && stricmp (ans, UNSURE_YES) && stricmp (ans, UNSURE_NO))
     {
-        printf ("\nSorry, I don't understand you.\n");
-        scanf ("%s", ans);
+        txSpeak ("\v\nSorry, I don't understand you.\n");
+        Get_ans (ans);
     }
     printf ("\n");
 
-    int err = 0;
+    int retval = NOT_GUESSED;
 
     if (elem -> left)
     {
-        if (stricmp (ans, YES) == 0) err |= Question (tree, elem ->  left);
-        else                         err |= Question (tree, elem -> right);
+             if (stricmp (ans, YES) == 0) retval = Question (tree, elem ->  left, unsure_before);
+        else if (stricmp (ans,  NO) == 0) retval = Question (tree, elem -> right, unsure_before);
+        else
+        {
+            if (stricmp (ans, UNSURE_YES) == 0) retval = Question (tree, elem ->  left, UNSURE);
+            else                                retval = Question (tree, elem -> right, UNSURE);
+
+            if (retval == NOT_GUESSED) return Question (tree, elem, unsure_before);
+        }
     }
     else
     {
-        if (stricmp (ans, YES) == 0) printf ("it was obvious!\n");
-        else err |= Add_new_question (tree, elem);
+        if (stricmp (ans, YES) == 0 || stricmp (ans, UNSURE_YES) == 0) txSpeak ("\vit was obvious!\n");
+        else 
+        {   
+            if (unsure_before) return NOT_GUESSED;
+            
+            Add_new_question (tree, elem);
+            retval = GUESSED;
+        }
     }
-    return err;
+    return retval;
 }
 
 int Add_new_question (Tree_t *tree, TreeElem_t *elem)
@@ -101,7 +115,7 @@ int Add_new_question (Tree_t *tree, TreeElem_t *elem)
     char ans [BUFSIZE] = "";
     int err = 0;
 
-    printf ("Then who is it?\n");
+    txSpeak ("\vThen who is it?\n");
     Get_ans (ans);
     
     char *newval = (char *) calloc (strlen (ans) + 1, 1);
@@ -114,7 +128,7 @@ int Add_new_question (Tree_t *tree, TreeElem_t *elem)
 
     if (err) return err;
 
-    printf ("\nHow %s differs form %s?\n", elem -> left -> value, elem -> right -> value);
+    txSpeak ("\v\nHow %s differs form %s?\n", elem -> left -> value, elem -> right -> value);
     Get_ans (ans);
         
     char *newquestion = (char *) calloc (strlen (ans) + 1, 1);
@@ -123,7 +137,7 @@ int Add_new_question (Tree_t *tree, TreeElem_t *elem)
     strcpy (newquestion, ans);
     elem -> value = newquestion;
 
-    printf ("\nOh, now I see!\n");
+    txSpeak ("\v\nOh, now I see!\n");
 
     return err;
 }
@@ -138,21 +152,25 @@ char *Get_ans (char *ans)
 
 int RunDefinition (Tree_t *tree)
 {
-    printf ("\nWhose definition would you like to know?\n");
+    txSpeak ("\v\nWhose definition would you like to know?\n");
 
     char ans [BUFSIZE] = "";
     Get_ans (ans);
 
     Stack_t stk = {};
-    StackCtor (&stk, 16);
+    StackCtor (&stk, BASE_CAPACITY);
 
     if (Get_definition (&(tree -> data), &stk, ans))
     {
-        printf ("\n%s is\n", ans);
+        char msg [BUFSIZE * (stk.size)] = "";
+        sprintf (msg, "\v\n%s is ", ans);
         int index = 0;
-        Print_definition (&(tree -> data), &stk, &index);
+        Print_definition (&(tree -> data), &stk, &index, msg);
+        txSpeak (msg);
     }
-    else printf ("\nI don't know what's that :(\n");
+    else txSpeak ("\v\nI don't know what's that :(");
+
+    printf ("\n");
 
     StackDtor (&stk);
     return 0;
@@ -176,17 +194,14 @@ int Get_definition (TreeElem_t *elem, Stack_t *stk, char *name)
     return 0;
 }
 
-void Print_definition (TreeElem_t *elem, Stack_t *stk, int *index)
+void Print_definition (TreeElem_t *elem, Stack_t *stk, int *index, char *msg)
 {
-    //printf ("\n%s is\n", name);
-
     for (; *index < stk -> size; (*index)++)
     {
-        if (!(stk -> data [*index])) printf ("ne ");
-        printf ("%s", elem -> value);
+        if (!(stk -> data [*index])) strcat (msg, "not ");
+        strcat (msg, elem -> value);
 
-        if (*index != stk -> size - 1) printf (",");
-        printf ("\n");
+        if (*index != stk -> size - 1) strcat (msg, ", ");
 
         if (stk -> data [*index]) elem = elem ->  left;
         else                      elem = elem -> right;
@@ -196,17 +211,17 @@ void Print_definition (TreeElem_t *elem, Stack_t *stk, int *index)
 
 int RunDifference (Tree_t *tree)
 {
-    printf ("Enter two things\n");
+    txSpeak ("\vEnter two things\n");
 
     char name1 [BUFSIZE] = "";
     Get_ans (name1);
 
     Stack_t stk1 = {};
-    StackCtor (&stk1, 16);
+    StackCtor (&stk1, BASE_CAPACITY);
 
     if (!Get_definition (&(tree -> data), &stk1, name1))
     {
-        printf ("\nI don't know what's that :(\n");
+        txSpeak ("\v\nI don't know what's that :(\n");
         return 0;
     }
 
@@ -214,11 +229,11 @@ int RunDifference (Tree_t *tree)
     Get_ans (name2);
 
     Stack_t stk2 = {};
-    StackCtor (&stk2, 16);
+    StackCtor (&stk2, BASE_CAPACITY);
 
     if (!Get_definition (&(tree -> data), &stk2, name2))
     {
-        printf ("\nI don't know what's that :(\n");
+        txSpeak ("\v\nI don't know what's that :(\n");
         return 0;
     }
 
@@ -231,7 +246,10 @@ int RunDifference (Tree_t *tree)
 
 void Print_difference (TreeElem_t *elem, Stack_t *stk1, Stack_t *stk2, char *name1, char *name2)
 {
-    if (stk1 -> data [0] == stk2 -> data [0]) printf ("\n%s and %s are both\n", name1, name2);
+    char msg [BUFSIZE * (stk1 -> size + stk2 -> size)] = "";
+
+    if (stk1 -> data [0] == stk2 -> data [0]) sprintf (msg, "\v\n%s and %s are both ", name1, name2);
+    else strcpy (msg,  "\v");
 
     int index = 0;
 
@@ -239,11 +257,10 @@ void Print_difference (TreeElem_t *elem, Stack_t *stk1, Stack_t *stk2, char *nam
     {
         if (stk1 -> data [index] != stk2 -> data [index]) break;
 
-        if (!(stk1 -> data [index])) printf ("ne ");
-        printf ("%s", elem -> value);
+        if (!(stk1 -> data [index])) strcat (msg, "not ");
+        strcat (msg, elem -> value);
         
-        if (index != stk1 -> size - 1) printf (",");
-        printf ("\n");
+        if (index != stk1 -> size - 1) strcat (msg, ", ");
 
         if (stk1 -> data [index]) elem = elem ->  left;
         else                      elem = elem -> right;
@@ -251,15 +268,20 @@ void Print_difference (TreeElem_t *elem, Stack_t *stk1, Stack_t *stk2, char *nam
 
     if (index == stk1 -> size) return;
 
-    if (index != 0) printf ("but ");
+    if (index != 0) strcat (msg, "\nbut ");
 
     int index1 = index;
 
-    printf ("%s is\n", name1);
-    Print_definition (elem, stk1, &index1);
+    strcat (msg, name1);
+    strcat (msg, " is ");
+    Print_definition (elem, stk1, &index1, msg);
 
-    printf ("and %s is\n", name2);
-    Print_definition (elem, stk2, &index);
+    strcat (msg, ",\nand ");
+    strcat (msg, name2);
+    strcat (msg, " is ");
+    Print_definition (elem, stk2, &index, msg);
+
+    txSpeak (msg);
 }
 
 int ShowTree (Tree_t *tree)
@@ -268,6 +290,7 @@ int ShowTree (Tree_t *tree)
     system ("start ./images/dumpimg0.png");
     return 0;
 }
+
 
 int LoadTree (Tree_t *tree, const char *filename)
 {
@@ -336,16 +359,16 @@ int SkipSpaces (FILE *file)
 int Read_value (FILE *file, TreeElem_t *elem)
 {
     int ch = SkipSpaces (file);
+
     if (ch == 'P')
     {
-        if (fgetc (file) != 'S') return TREE_INCORRECT_FORMAT;
-        if (fgetc (file) != 'N') return TREE_INCORRECT_FORMAT;
-
+        ungetc (ch, file);
+        if (!Read_poison (file)) return TREE_INCORRECT_FORMAT;
         elem -> value = POISON_VAL;
     }
     else if (ch == '"')
     {
-        char buf [BUFSIZE];
+        char buf [BUFSIZE] = "";
         size_t len = 0;
 
         ch = fgetc (file);
@@ -365,6 +388,14 @@ int Read_value (FILE *file, TreeElem_t *elem)
     else return TREE_INCORRECT_FORMAT;
 
     return TREE_OK;
+}
+
+int Read_poison (FILE *file)
+{
+    if (fgetc (file) != 'P') return 0;
+    if (fgetc (file) != 'S') return 0;
+    if (fgetc (file) != 'N') return 0;
+    return 1;
 }
 
 

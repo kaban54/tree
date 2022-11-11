@@ -1,9 +1,12 @@
 
 {"animal"
-	{"vistupet v cirqe"
+	{"vistupaet v cirqe"
 		{"polosatiy"
-			{"tigr"}
-			{"lev"}
+			{"tiger"}
+			{"POHOZHA NA TYEBYA!!!"
+				{"monkey"}
+				{"lion"}
+			}
 		}
 		{"big"
 			{"wolf"}
@@ -21,32 +24,32 @@
 				{"printf"}
 			}
 		}
-		{"chelovek"
+		{"human"
 			{"studies at MIPT"
 				{"loh"
 					{"Max"}
 					{"Senya"}
 				}
 				{"can sing"
-					{"americanec"
+					{"american"
 						{"Michael Jackson"}
 						{"Alla Pugacheva"}
 					}
 					{"ded"}
 				}
 			}
-			{"gorod"
+			{"city"
 				{"in Russia"
 					{"capital"
 						{"Moscow"}
 						{"Dolgoprudniy"}
 					}
-					{"tam riba, chipsi, dryannaya eda, otvratnaya pogoda, Marry *** Poppins"
-						{"London"}
+					{"in France"
+						{"Paris"}
 						{"Los Angeles"}
 					}
 				}
-				{"zeleniy"
+				{"green"
 					{"2"
 						{"shrek 2"}
 						{"shrek"}

@@ -1,3 +1,5 @@
+#define TX_USE_SPEAK
+#include <TXLib.h>
 #include "tree.h"
 #include "akinator.h"
 
