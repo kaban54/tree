@@ -8,21 +8,17 @@ const size_t BUFSIZE = 256;
 
 const char *const TREE_FILE_NAME = "akinator_tree.txt";
 
-const char *const        YES = "yes";
-const char *const        NO  = "no";
-const char *const UNSURE_YES = "rather yes";
-const char *const UNSURE_NO  = "rather no";
+const char *const     YES_STR = "yes";
+const char *const     NO_STR  = "no";
+const char *const UNS_YES_STR = "rather yes";
+const char *const UNS_NO_STR  = "rather no";
 
-enum AKINATOR_UNSURE
+enum AKINATOR_ANSWERS
 {
-      SURE = 0,
-    UNSURE = 1,
-};
-
-enum QUESTION_RETVAL
-{
-    NOT_GUESSED = 0,
-        GUESSED = 1,
+        YES =  2,
+        NO  = -2,
+    UNS_YES =  1,
+    UNS_NO  = -1,
 };
 
 
@@ -30,13 +26,23 @@ int RunAkinator ();
 
 int RunGuess (Tree_t *tree);
 
-int Question (Tree_t *tree, TreeElem_t *elem, int unsure_before);
+int Question (Tree_t *tree);
+
+TreeElem_t *Get_last_unsure (Tree_t *tree, Stack_t *ans_stk);
 
 int Add_new_question (Tree_t *tree, TreeElem_t *elem);
 
 int Get_new_question (char *buf);
 
 char *Get_ans (char *ans);
+
+int Get_YN_ans ();
+
+int AnsYes (int ans);
+
+int AnsNo (int ans);
+
+int AnsUnsure (int ans);
 
 int RunDefinition (Tree_t *tree);
 

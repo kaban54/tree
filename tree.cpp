@@ -66,7 +66,7 @@ int Tree_free_data (TreeElem_t *elem, int *size, int freevalue)
     if (elem ->  left) Tree_free_data (elem ->  left, size, freevalue);
     if (elem -> right) Tree_free_data (elem -> right, size, freevalue);
 
-    if (freevalue && elem -> value != POISON_VAL) free ( elem -> value);
+    if (freevalue && elem -> value != POISON_VAL) free (elem -> value);
     free (elem);
     *size -= 1;
 

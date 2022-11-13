@@ -46,8 +46,10 @@ int RunAkinator ()
 
     err = SaveTree (&tree, TREE_FILE_NAME);
     TreeDump (&tree);
+    TreeDtor (&tree, 1);
     return err;
 }
+
 
 int RunGuess (Tree_t *tree)
 {
@@ -62,52 +64,73 @@ int RunGuess (Tree_t *tree)
 
         if (mode == 1)
         {
-            Question (tree, &(tree -> data), SURE);
+            Question (tree);
         }
         else return 0;
     }
 }
 
-int Question (Tree_t *tree, TreeElem_t *elem, int unsure_before)
+int Question (Tree_t *tree)
 {
-    txSpeak ("\v\n%s?\n", elem -> value);
-    printf ("(%s / %s / %s / %s)\n", YES, UNSURE_YES, UNSURE_NO, NO);
-    char ans [BUFSIZE] = "";
+    Stack_t ans_stk = {};
+    StackCtor (&ans_stk, BASE_CAPACITY);
 
-    Get_ans (ans);
-    while (stricmp (ans, YES) && stricmp (ans, NO) && stricmp (ans, UNSURE_YES) && stricmp (ans, UNSURE_NO))
+    TreeElem_t *elem = &(tree -> data);
+    int unsure_count = 0;
+
+    while (1)
     {
-        txSpeak ("\v\nSorry, I don't understand you.\n");
-        Get_ans (ans);
-    }
-    printf ("\n");
+        txSpeak ("\v\n%s?\n", elem -> value);
 
-    int retval = NOT_GUESSED;
+        int ans = Get_YN_ans ();
+        printf ("\n");
 
-    if (elem -> left)
-    {
-             if (stricmp (ans, YES) == 0) retval = Question (tree, elem ->  left, unsure_before);
-        else if (stricmp (ans,  NO) == 0) retval = Question (tree, elem -> right, unsure_before);
+        if (elem -> left)
+        {
+            StackPush (&ans_stk, ans);
+            unsure_count += AnsUnsure (ans);
+
+            if (AnsYes (ans)) elem = elem ->  left;
+            else              elem = elem -> right; 
+            continue;
+        }
         else
         {
-            if (stricmp (ans, UNSURE_YES) == 0) retval = Question (tree, elem ->  left, UNSURE);
-            else                                retval = Question (tree, elem -> right, UNSURE);
+            if (AnsYes (ans))
+            {
+                txSpeak ("\vit was obvious!\n");
+                break;
+            }
+            else if (unsure_count)
+            {
+                elem = Get_last_unsure (tree, &ans_stk);
+                unsure_count--;
+                continue;
+            }
+            else 
+            {
+                Add_new_question (tree, elem);
+                break;
+            }
+        }
+    }
+    StackDtor (&ans_stk);
+    return TREE_OK;
+}
 
-            if (retval == NOT_GUESSED) return Question (tree, elem, unsure_before);
-        }
-    }
-    else
+TreeElem_t *Get_last_unsure (Tree_t *tree, Stack_t *ans_stk)
+{
+    while (!AnsUnsure (ans_stk -> data [ans_stk -> size - 1])) StackPop (ans_stk, nullptr);
+    StackPop (ans_stk, nullptr);
+
+    TreeElem_t *elem = &(tree -> data);
+
+    for (int index = 0; index < ans_stk -> size; index++)
     {
-        if (stricmp (ans, YES) == 0 || stricmp (ans, UNSURE_YES) == 0) txSpeak ("\vit was obvious!\n");
-        else 
-        {   
-            if (unsure_before) return NOT_GUESSED;
-            
-            Add_new_question (tree, elem);
-            retval = GUESSED;
-        }
+        if (AnsYes (ans_stk -> data [index])) elem = elem ->  left;
+        else                                  elem = elem -> right;
     }
-    return retval;
+    return elem;
 }
 
 int Add_new_question (Tree_t *tree, TreeElem_t *elem)
@@ -144,11 +167,48 @@ int Add_new_question (Tree_t *tree, TreeElem_t *elem)
 
 char *Get_ans (char *ans)
 {
+    if (ans == nullptr) return nullptr;
+
     fflush (stdin);
     fgets (ans, BUFSIZE, stdin);
     *strchr (ans, '\n') = '\0';
     return ans;
 }
+
+int Get_YN_ans ()
+{
+    printf ("(%s / %s / %s / %s)\n", YES_STR, UNS_YES_STR, UNS_NO_STR, NO_STR);
+
+    char buf [BUFSIZE] = "";
+
+    Get_ans (buf);
+    while (1)
+    {
+        if (stricmp (buf,     YES_STR) == 0) return YES;
+        if (stricmp (buf,      NO_STR) == 0) return NO;
+        if (stricmp (buf, UNS_YES_STR) == 0) return UNS_YES;
+        if (stricmp (buf,  UNS_NO_STR) == 0) return UNS_NO;
+
+        txSpeak ("\v\nSorry, I don't understand you.\n");
+        Get_ans (buf);
+    }
+}
+
+int AnsYes (int ans)
+{
+    return ans > 0;
+}
+
+int AnsNo (int ans)
+{
+    return ans < 0;
+}
+
+int AnsUnsure (int ans)
+{
+    return ans % 2;
+}
+
 
 int RunDefinition (Tree_t *tree)
 {

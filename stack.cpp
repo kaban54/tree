@@ -111,7 +111,7 @@ int StackPop (struct Stack_t *stk, Elem_t *value)
     if (stk -> size <= 0) return SIZE_ERROR;
 
     stk -> size--;
-    *value = (stk -> data) [stk -> size];
+    if (value) *value = (stk -> data) [stk -> size];
     stk -> data [stk -> size] = POISON_ELEM;
 
     if (stk -> size * 4 <= (stk -> capacity) && stk -> size > 0) StackResize (stk, stk -> size * 2, NOT_SET_HASH);
