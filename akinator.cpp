@@ -282,6 +282,7 @@ int RunDifference (Tree_t *tree)
     if (!Get_definition (&(tree -> data), &stk1, name1))
     {
         txSpeak ("\v\nI don't know what's that :(\n");
+        StackDtor (&stk1);
         return 0;
     }
 
@@ -294,10 +295,13 @@ int RunDifference (Tree_t *tree)
     if (!Get_definition (&(tree -> data), &stk2, name2))
     {
         txSpeak ("\v\nI don't know what's that :(\n");
+        StackDtor (&stk1);
+        StackDtor (&stk2);
         return 0;
     }
 
     Print_difference (&(tree -> data), &stk1, &stk2, name1, name2);
+    printf ("\n");
 
     StackDtor (&stk1);
     StackDtor (&stk2);
